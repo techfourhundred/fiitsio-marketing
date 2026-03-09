@@ -144,8 +144,82 @@ def generate_slide(
     return output_path
 
 
-def generate_slideshow(slides_data: list[dict], session_id: str) -> list[str]:
-    """Generate all slides for a post and return file paths."""
+def generate_slide_over_bg(
+    slide_num: int,
+    total_slides: int,
+    headline: str,
+    body: str | None,
+    stat: str | None,
+    bg_image_path: str,
+    output_path: str,
+) -> str:
+    """Composite text + overlay over an AI-generated background image."""
+    bg = Image.open(bg_image_path).convert('RGB')
+    # Resize/crop to exact 1080x1920
+    bg = bg.resize((SLIDE_W, SLIDE_H), Image.LANCZOS)
+
+    # Dark overlay so text is always readable
+    overlay = Image.new('RGBA', (SLIDE_W, SLIDE_H), (0, 0, 0, 160))
+    composite = Image.alpha_composite(bg.convert('RGBA'), overlay).convert('RGB')
+
+    draw = ImageDraw.Draw(composite)
+
+    # Use white text on dark overlay
+    theme = {'text': COLORS['white'], 'accent': COLORS['green']}
+
+    # Accent bar
+    draw_accent_bar(draw, theme['accent'], y_pos=140)
+
+    # Slide counter
+    counter_font = load_font(36)
+    draw.text((80, 80), f'{slide_num}/{total_slides}', font=counter_font, fill=(200, 200, 200))
+
+    # Big stat
+    if stat:
+        stat_font = load_font(180, bold=True)
+        stat_bbox = draw.textbbox((0, 0), stat, font=stat_font)
+        stat_w = stat_bbox[2] - stat_bbox[0]
+        draw.text(((SLIDE_W - stat_w) // 2, 600), stat, font=stat_font, fill=theme['accent'])
+
+    # Headline
+    headline_font = load_font(88, bold=True)
+    wrapped = wrap_text(headline, max_chars=18)
+    y = 300 if not stat else 950
+    for line in wrapped:
+        bbox = draw.textbbox((0, 0), line, font=headline_font)
+        x = (SLIDE_W - (bbox[2] - bbox[0])) // 2
+        draw.text((x, y), line, font=headline_font, fill=theme['text'])
+        y += 110
+
+    # Body
+    if body:
+        body_font = load_font(54)
+        y += 60
+        for line in wrap_text(body, max_chars=28):
+            bbox = draw.textbbox((0, 0), line, font=body_font)
+            x = (SLIDE_W - (bbox[2] - bbox[0])) // 2
+            draw.text((x, y), line, font=body_font, fill=(220, 220, 220))
+            y += 72
+
+    # Watermark
+    brand_font = load_font(42, bold=True)
+    draw.text((80, SLIDE_H - 100), 'fiitsio.com', font=brand_font, fill=theme['accent'])
+
+    composite.save(output_path, 'JPEG', quality=95)
+    return output_path
+
+
+def generate_slideshow(slides_data: list[dict], session_id: str, backgrounds: list = None) -> list[str]:
+    """
+    Generate all slides for a post and return file paths.
+    If backgrounds is provided (list of paths or None), composite text over them.
+    Falls back to gradient renderer if background path is None.
+    Exactly 6 slides — always.
+    """
+    # Enforce exactly 6 slides
+    if len(slides_data) != 6:
+        raise ValueError(f'Expected exactly 6 slides, got {len(slides_data)}. TikTok sweet spot is 6.')
+
     total = len(slides_data)
     paths = []
     session_dir = os.path.join(OUTPUT_DIR, session_id)
@@ -153,15 +227,31 @@ def generate_slideshow(slides_data: list[dict], session_id: str) -> list[str]:
 
     for i, slide in enumerate(slides_data, 1):
         path = os.path.join(session_dir, f'slide_{i:02d}.jpg')
-        generate_slide(
-            slide_num=i,
-            total_slides=total,
-            headline=slide['headline'],
-            body=slide.get('body'),
-            stat=slide.get('stat'),
-            theme_idx=i - 1,
-            output_path=path,
-        )
+
+        # Use AI background if provided and exists
+        bg = backgrounds[i - 1] if backgrounds and i - 1 < len(backgrounds) else None
+
+        if bg and os.path.exists(bg):
+            generate_slide_over_bg(
+                slide_num=i,
+                total_slides=total,
+                headline=slide['headline'],
+                body=slide.get('body'),
+                stat=slide.get('stat'),
+                bg_image_path=bg,
+                output_path=path,
+            )
+        else:
+            generate_slide(
+                slide_num=i,
+                total_slides=total,
+                headline=slide['headline'],
+                body=slide.get('body'),
+                stat=slide.get('stat'),
+                theme_idx=i - 1,
+                output_path=path,
+            )
+
         paths.append(path)
         print(f'✅ Slide {i}/{total}: {path}')
 

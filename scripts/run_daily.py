@@ -80,9 +80,21 @@ def run(dry_run: bool = False, force_topic: str | None = None) -> None:
     slides_data = get_slide_content_for_topic(topic)
     print(f'\n📊 Generating {len(slides_data)} slides...')
 
-    # 3. Render slides to images
+    # 3. Generate AI backgrounds (if OpenAI key available) + render slides
     session_id = f'{topic["topic"]}_{timestamp}'
-    image_paths = generate_slideshow(slides_data, session_id)
+    session_dir = str(OUTPUT_DIR / session_id)
+
+    backgrounds = None
+    if os.environ.get('OPENAI_API_KEY'):
+        print('\n🎨 Generating AI gym backgrounds...')
+        from generate_ai_bg import generate_slide_backgrounds
+        backgrounds = generate_slide_backgrounds(session_dir, num_slides=6)
+        ai_count = sum(1 for b in backgrounds if b)
+        print(f'✅ AI backgrounds: {ai_count}/6 generated')
+    else:
+        print('\n🎨 Using gradient backgrounds (add OPENAI_API_KEY for AI gym photos)')
+
+    image_paths = generate_slideshow(slides_data, session_id, backgrounds=backgrounds)
     print(f'✅ Rendered {len(image_paths)} slide images')
 
     # 4. Build captions per platform

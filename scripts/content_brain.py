@@ -15,10 +15,12 @@ from datetime import datetime
 # These are the proven slide structures. Brain picks the right one and fills in.
 
 CONTENT_TEMPLATES = {
+    # All templates are locked to EXACTLY 6 slides — TikTok's engagement sweet spot
+    # TikTok data: slideshows get 2.9x more comments, 1.9x more likes, 2.6x more shares vs video
     "pain_reveal": {
         "description": "Reveal a hidden gym pain point, build tension, offer Fiitsio as solution",
-        "slides": 5,
-        "structure": ["hook/pain", "context", "stat", "consequence", "solution_cta"],
+        "slides": 6,
+        "structure": ["hook/pain", "context", "deepen", "stat", "consequence", "solution_cta"],
     },
     "competitor_comparison": {
         "description": "Compare Fiitsio vs competitor on price/features/UX",
@@ -26,14 +28,14 @@ CONTENT_TEMPLATES = {
         "structure": ["hook", "competitor_cost", "hidden_fees", "fiitsio_cost", "comparison", "cta"],
     },
     "quick_tips": {
-        "description": "5 actionable tips for gym owners",
-        "slides": 7,
-        "structure": ["hook", "tip1", "tip2", "tip3", "tip4", "tip5", "cta"],
+        "description": "5 actionable tips for gym owners (hook + 4 tips + cta = 6)",
+        "slides": 6,
+        "structure": ["hook", "tip1", "tip2", "tip3", "tip4", "cta"],
     },
     "stat_shock": {
         "description": "Lead with a shocking stat, explain it, offer solution",
-        "slides": 5,
-        "structure": ["stat_hook", "what_it_means", "why_it_happens", "what_to_do", "cta"],
+        "slides": 6,
+        "structure": ["stat_hook", "what_it_means", "why_it_happens", "what_to_do", "what_fiitsio_does", "cta"],
     },
     "before_after": {
         "description": "Before Fiitsio / After Fiitsio transformation",
@@ -55,62 +57,65 @@ HOOKS_BANK = [
     "Stop letting your gym management app manage YOU.",
 ]
 
+# HASHTAG RULE: Max 5 per post — TikTok's current effective limit
+# Using more than 5 dilutes reach; pick the most targeted 5 for each topic
+
 TOPICS_POOL = [
     {
         "topic": "member_churn_signs",
-        "title": "5 signs a member is about to cancel",
+        "title": "4 signs a member is about to cancel",
         "template": "quick_tips",
         "caption_hook": "Your member is planning to leave. You have 2 weeks to stop them.",
-        "hashtags": ["#gymowner #gymbusiness #memberretention #fitnessapp #gymmanagement #fiitsio"],
+        "hashtags": ["#gymowner #memberretention #gymbusiness #fitnessapp #fiitsio"],
     },
     {
         "topic": "mindbody_hidden_fees",
         "title": "What Mindbody actually costs you",
         "template": "competitor_comparison",
         "caption_hook": "Mindbody charges you how much per year?? (most gym owners don't know)",
-        "hashtags": ["#gymowner #mindbody #gymsoftware #gymbusiness #fiitsio #gymtech"],
+        "hashtags": ["#gymowner #mindbody #gymsoftware #gymbusiness #fiitsio"],
     },
     {
         "topic": "churn_stat_shock",
         "title": "The 30% churn stat that kills gyms",
         "template": "stat_shock",
         "caption_hook": "30% of your gym members are planning to cancel. Most gyms find out after.",
-        "hashtags": ["#gymowner #gymretention #gymbusiness #memberretention #gymmanagement"],
+        "hashtags": ["#gymowner #gymretention #gymbusiness #memberretention #fiitsio"],
     },
     {
         "topic": "whatsapp_automation",
         "title": "How to automate member retention on WhatsApp",
         "template": "before_after",
         "caption_hook": "This gym stopped losing members with one WhatsApp message. Here's how.",
-        "hashtags": ["#gymowner #whatsapp #gymautomation #gymbusiness #fiitsio #memberretention"],
+        "hashtags": ["#gymowner #gymautomation #gymbusiness #memberretention #fiitsio"],
     },
     {
         "topic": "gym_software_switch",
         "title": "We switched from Glofox — what happened",
         "template": "before_after",
         "caption_hook": "We switched gym software and our revenue went up. Not down. Here's the math.",
-        "hashtags": ["#gymowner #glofox #gymsoftware #gymbusiness #fiitsio #gymmanagement"],
+        "hashtags": ["#gymowner #gymsoftware #gymbusiness #gymtech #fiitsio"],
     },
     {
         "topic": "retention_math",
         "title": "The math behind your gym's churn problem",
         "template": "stat_shock",
         "caption_hook": "Here's the exact math gym owners need to understand about member churn.",
-        "hashtags": ["#gymowner #gymretention #gymbusiness #gymmath #fitnessapp #fiitsio"],
+        "hashtags": ["#gymowner #gymretention #gymbusiness #fitnessapp #fiitsio"],
     },
     {
         "topic": "gym_owner_time",
         "title": "How gym owners waste 10 hours/week",
         "template": "pain_reveal",
         "caption_hook": "You're spending 10+ hours/week on tasks that should take 10 minutes.",
-        "hashtags": ["#gymowner #gymbusiness #gymproductivity #gymmanagement #fiitsio"],
+        "hashtags": ["#gymowner #gymbusiness #gymmanagement #gymproductivity #fiitsio"],
     },
     {
         "topic": "mbway_payments",
         "title": "Why your gym needs MB Way",
         "template": "pain_reveal",
         "caption_hook": "If your gym in Portugal doesn't accept MB Way, you're losing members.",
-        "hashtags": ["#gymowner #mbway #ginasio #portugal #fiitsio #gymmanagement"],
+        "hashtags": ["#gymowner #mbway #ginasio #portugal #fiitsio"],
     },
 ]
 
@@ -120,47 +125,74 @@ def get_slide_content_for_topic(topic_data: dict) -> list[dict]:
     topic = topic_data["topic"]
     template = CONTENT_TEMPLATES[topic_data["template"]]
 
-    # Pre-built content for each topic
+    # Pre-built content — ALL topics are EXACTLY 6 slides (TikTok sweet spot)
+    # Slide 1 always has the hook text (shown as text overlay, sets the premise)
+    # Slides 2-5 are the value payload
+    # Slide 6 is always the CTA (soft mention of Fiitsio + fiitsio.com)
     content_map = {
-        "member_churn_signs": [
-            {"headline": "5 signs a member is about to cancel", "body": "Most gym owners miss all 5.", "stat": None},
-            {"headline": "Sign #1: Drop in bookings", "body": "4x/week → 2x/week for 14 days.\nNot a holiday. It's the beginning of the end.", "stat": None},
-            {"headline": "Sign #2: No-shows", "body": "Books but doesn't show.\nThree times in a row = danger zone.", "stat": None},
-            {"headline": "Sign #3: Stops buying add-ons", "body": "Used to buy PT sessions, smoothies, merch.\nNow? Nothing.", "stat": None},
-            {"headline": "Sign #4: App opens drop", "body": "Goes from daily app opens to once a week.\nDisengaged digitally = disengaged physically.", "stat": None},
-            {"headline": "Sign #5: The 21-day rule", "body": "No visit in 21 days.\nStatistically, 70% of these members cancel within 30 days.", "stat": "21 days"},
+        "member_churn_signs": [  # quick_tips: hook + 4 tips + cta
+            {"headline": "4 signs a member is about to cancel", "body": "Most gym owners miss all of them.", "stat": None},
+            {"headline": "Sign #1: Booking drop", "body": "4x/week → 2x/week for 14 days.\nNot a holiday. It's the beginning of the end.", "stat": None},
+            {"headline": "Sign #2: No-shows", "body": "Books but doesn't show up.\nThree times in a row = danger zone.", "stat": None},
+            {"headline": "Sign #3: App silence", "body": "Goes from daily app opens to once a week.\nDisengaged digitally = disengaged physically.", "stat": None},
+            {"headline": "Sign #4: The 21-day rule", "body": "No visit in 21 days.\n70% of these members cancel within 30 days.", "stat": "21 days"},
             {"headline": "Fiitsio alerts you", "body": "automatically when any of these happen.\nBefore they cancel.\n\nfiitsio.com", "stat": None},
         ],
-        "mindbody_hidden_fees": [
+        "mindbody_hidden_fees": [  # competitor_comparison: 6 slides
             {"headline": "Mindbody costs €400/month.", "body": "But that's not the real cost.", "stat": None},
             {"headline": "Their processor fee", "body": "3.35% on EVERY transaction.\nEven on debit cards that cost them nothing.", "stat": "3.35%"},
-            {"headline": "The marketplace cut", "body": "New client discovers you on Mindbody?\nThey take 20% of that first payment.", "stat": "20%"},
-            {"headline": "The real annual cost", "body": "€499/mo plan + 3.35% processing + 20% marketplace\non a €20k/mo gym = €10,000+/year to Mindbody.", "stat": "€10K+"},
-            {"headline": "Fiitsio pricing", "body": "€99/month.\nNo processing markup.\nNo marketplace cut.\nEver.", "stat": "€99/mo"},
-            {"headline": "The switch pays itself", "body": "Most gyms save €400-600/month switching.\nWe migrate your data for free in 48 hours.", "stat": None},
+            {"headline": "The marketplace cut", "body": "New client finds you on Mindbody?\nThey take 20% of that first payment.", "stat": "20%"},
+            {"headline": "The real annual cost", "body": "Plan + processing + marketplace cut\non a €20k/month gym = over €10,000/year.", "stat": "€10K+"},
+            {"headline": "Fiitsio: €99/month", "body": "No processing markup.\nNo marketplace commission.\nEver.", "stat": "€99/mo"},
+            {"headline": "The switch pays itself", "body": "Most gyms save €400–600/month.\nFree data migration in 48 hours.\n\nfiitsio.com", "stat": None},
         ],
-        "churn_stat_shock": [
+        "churn_stat_shock": [  # stat_shock: 6 slides
             {"headline": "30% of gym members cancel", "body": "in the first 90 days.", "stat": "30%"},
-            {"headline": "And most gym owners", "body": "don't know it's happening\nuntil they check their bank statement.", "stat": None},
+            {"headline": "Most gym owners", "body": "find out after they've already cancelled.\nNot before. After.", "stat": None},
             {"headline": "Why it happens", "body": "No engagement after signup.\nNo accountability.\nNo reason to stay.", "stat": None},
-            {"headline": "The fix isn't discounts", "body": "It's catching the warning signs\nbefore they mentally check out.", "stat": None},
-            {"headline": "Fiitsio tracks every member", "body": "and alerts you when attendance drops.\nBefore they cancel.\n\nfiitsio.com", "stat": None},
+            {"headline": "The fix isn't discounts", "body": "It's catching warning signs\nbefore they mentally check out.", "stat": None},
+            {"headline": "What good looks like", "body": "Member drops to 1 visit/week?\nYou get an alert. You reach out. They stay.", "stat": None},
+            {"headline": "Fiitsio tracks every member", "body": "Alerts you before they cancel.\nNot after.\n\nfiitsio.com", "stat": None},
         ],
-        "whatsapp_automation": [
-            {"headline": "This gym loses 30% of members every quarter.", "body": "Sound familiar?", "stat": None},
-            {"headline": "Before Fiitsio", "body": "Manual check on inactive members.\nForget to follow up.\nThey leave silently.", "stat": None},
-            {"headline": "The turning point", "body": "Member hasn't booked in 14 days.\nFiitsio sends a WhatsApp automatically.\n\"Hey [Name], missing you at the gym 💪\"", "stat": None},
-            {"headline": "After Fiitsio", "body": "60% of contacted members\nbook a class within 48 hours.", "stat": "60%"},
+        "whatsapp_automation": [  # before_after: 6 slides
+            {"headline": "This gym was losing 30% of members every quarter.", "body": "Sound familiar?", "stat": None},
+            {"headline": "Before Fiitsio", "body": "Manual tracking of inactive members.\nForget to follow up.\nThey leave silently.", "stat": None},
+            {"headline": "Before Fiitsio", "body": "No system. No alerts.\nJust checking the member list and hoping.", "stat": None},
+            {"headline": "After Fiitsio", "body": "Member inactive for 14 days?\nAutomatic WhatsApp: \"Hey [Name], missing you 💪\"\n60% rebook within 48 hours.", "stat": "60%"},
             {"headline": "Churn dropped", "body": "from 28% to 9%\nin 60 days.", "stat": "9%"},
-            {"headline": "Set it up in 5 minutes.", "body": "fiitsio.com", "stat": None},
+            {"headline": "Set it up in 5 minutes.", "body": "No code. No agency.\nJust Fiitsio.\n\nfiitsio.com", "stat": None},
         ],
-        "gym_owner_time": [
+        "gym_software_switch": [  # before_after: 6 slides
+            {"headline": "We switched gym software.", "body": "Revenue went up. Not down.\nHere's the exact math.", "stat": None},
+            {"headline": "Before (Glofox)", "body": "€250/month plan.\n+ payment processing fees we didn't know about.\n+ €500 setup fee.", "stat": None},
+            {"headline": "The hidden cost", "body": "Every member payment was eating 2.9%.\nOn €15k/month, that's €435/month. Every month.", "stat": "€435/mo"},
+            {"headline": "After (Fiitsio)", "body": "€99/month flat.\nNo processing markup.\nSame features. Better retention tools.", "stat": "€99/mo"},
+            {"headline": "Saved in year 1", "body": "€2,232 in processing fees\n+ €1,812 in plan costs\n= €4,044 back in our pocket.", "stat": "€4K+"},
+            {"headline": "We migrated in 2 days.", "body": "Fiitsio moved everything.\nZero downtime.\n\nfiitsio.com", "stat": None},
+        ],
+        "retention_math": [  # stat_shock: 6 slides
+            {"headline": "Here's the maths gym owners don't want to do.", "body": "But need to.", "stat": None},
+            {"headline": "Average member value", "body": "€50/month × 14 months average LTV\n= €700 per member.", "stat": "€700"},
+            {"headline": "Losing 5 members/month", "body": "= €42,000 in lost annual revenue.\nNot next year. This year.", "stat": "€42K"},
+            {"headline": "If you retain just 2 of those 5", "body": "= €16,800 back per year.\nFrom one email. One WhatsApp. One alert.", "stat": "+€16K"},
+            {"headline": "The tool that sends that alert", "body": "costs €99/month.\n= €1,188/year.\nROI on retaining 2 members: 14x.", "stat": "14x ROI"},
+            {"headline": "Do the maths for your gym.", "body": "Then come talk to us.\n\nfiitsio.com", "stat": None},
+        ],
+        "gym_owner_time": [  # pain_reveal: hook + context + deepen + stat + consequence + cta
             {"headline": "You're wasting 10 hours/week.", "body": "Here's exactly where it goes.", "stat": None},
-            {"headline": "2 hours: chasing payments", "body": "Manually messaging members about failed charges.\nOne by one.", "stat": "2h"},
-            {"headline": "3 hours: scheduling", "body": "Editing class times, handling cancellations,\nreplying to 'is there a class at 7pm?' on WhatsApp.", "stat": "3h"},
-            {"headline": "2 hours: reporting", "body": "Pulling numbers from different places\nto understand if your gym is actually growing.", "stat": "2h"},
-            {"headline": "3 hours: member comms", "body": "Following up on at-risk members,\nwelcoming new ones, chasing renewals.", "stat": "3h"},
-            {"headline": "Fiitsio does all of this.", "body": "Automatically.\nSo you can spend those 10 hours coaching.\n\nfiitsio.com", "stat": None},
+            {"headline": "3 hours: scheduling chaos", "body": "Editing class times, cancellations,\n'Is there a class at 7?' WhatsApps. Every. Day.", "stat": "3h"},
+            {"headline": "3 hours: chasing payments", "body": "Messaging members about failed charges.\nManually. One by one.", "stat": "3h"},
+            {"headline": "4 hours: reporting & comms", "body": "Pulling numbers from 3 different tools.\nManually welcoming new members.\nChasing renewals.", "stat": "4h"},
+            {"headline": "That's 520 hours/year", "body": "on admin that should be automated.\n13 full working weeks. Every year.", "stat": "520h"},
+            {"headline": "Fiitsio does all of it.", "body": "Automatically.\nSo those 10 hours go back to coaching.\n\nfiitsio.com", "stat": None},
+        ],
+        "mbway_payments": [  # pain_reveal: 6 slides
+            {"headline": "If your gym in Portugal doesn't accept MB Way,", "body": "you're losing members.", "stat": None},
+            {"headline": "52% of Portuguese consumers", "body": "prefer MB Way as their primary payment method.\nMore than credit card. More than bank transfer.", "stat": "52%"},
+            {"headline": "The friction cost", "body": "Member wants to join.\nSees no MB Way option.\nLeaves. Goes to your competitor.", "stat": None},
+            {"headline": "Multibanco too", "body": "Older demographics still use Multibanco.\nIf your system can't generate a reference,\nyou lose those members silently.", "stat": None},
+            {"headline": "Fiitsio supports both", "body": "MB Way + Multibanco, built in.\nNo third-party integration needed.\nNo extra fees.", "stat": None},
+            {"headline": "Built for the Portuguese market.", "body": "From day one.\n\nfiitsio.com", "stat": None},
         ],
     }
 
