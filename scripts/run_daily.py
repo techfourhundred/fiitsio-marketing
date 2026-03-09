@@ -27,11 +27,7 @@ from content_brain import (
     TOPICS_POOL,
 )
 from generate_slide import generate_slideshow
-from postiz_poster import (
-    post_tiktok_slideshow,
-    post_instagram_carousel,
-    post_x_with_image,
-)
+from tiktok_direct import post_slideshow as tiktok_post_slideshow
 
 BASE_DIR   = Path(__file__).parent.parent
 LOG_FILE   = BASE_DIR / 'logs' / 'post_history.json'
@@ -97,35 +93,21 @@ def run(dry_run: bool = False, force_topic: str | None = None) -> None:
     image_paths = generate_slideshow(slides_data, session_id, backgrounds=backgrounds)
     print(f'✅ Rendered {len(image_paths)} slide images')
 
-    # 4. Build captions per platform
+    # 4. Post to platforms (direct APIs — no Postiz)
     results = {}
+    tiktok_caption = build_caption(topic, 'tiktok')
 
-    # 4a. TikTok
-    if os.environ.get('POSTIZ_TIKTOK_ID'):
-        print('\n📱 Posting to TikTok...')
-        caption = build_caption(topic, 'tiktok')
-        result = post_tiktok_slideshow(image_paths, caption, dry_run=dry_run)
-        results['tiktok'] = result
-    else:
-        print('\n⚠️  TikTok: POSTIZ_TIKTOK_ID not set — skipping')
-
-    # 4b. Instagram
-    if os.environ.get('POSTIZ_INSTAGRAM_ID'):
-        print('\n📸 Posting to Instagram...')
-        caption = build_caption(topic, 'instagram')
-        result = post_instagram_carousel(image_paths, caption, dry_run=dry_run)
-        results['instagram'] = result
-    else:
-        print('\n⚠️  Instagram: POSTIZ_INSTAGRAM_ID not set — skipping')
-
-    # 4c. X (first slide only + text)
-    if os.environ.get('POSTIZ_X_ID'):
-        print('\n𝕏 Posting to X...')
-        caption = build_caption(topic, 'x')
-        result = post_x_with_image(caption, image_paths[0] if image_paths else None, dry_run=dry_run)
-        results['x'] = result
-    else:
-        print('\n⚠️  X: POSTIZ_X_ID not set — skipping')
+    # 4a. TikTok (direct API — free)
+    print('\n📱 Posting to TikTok drafts (direct API)...')
+    result = tiktok_post_slideshow(
+        session_id=session_id,
+        image_paths=image_paths,
+        caption=tiktok_caption,
+        dry_run=dry_run,
+    )
+    results['tiktok'] = result
+    if not result:
+        print('   ⚠️  TikTok skipped — run python3 tiktok_auth.py to connect')
 
     # 5. Log
     log_post(topic, str(LOG_FILE), results)
@@ -143,8 +125,7 @@ def run(dry_run: bool = False, force_topic: str | None = None) -> None:
         print('\n  🔍 DRY RUN complete — nothing posted')
     print('='*60)
 
-    # 7. Notify Kevin via Telegram with caption (he needs to paste it into TikTok drafts + add music)
-    tiktok_caption = build_caption(topic, 'tiktok')
+    # 7. Notify Kevin via Telegram with caption (paste into TikTok draft + add music)
     try:
         status = 'dry run ✋' if dry_run else '✅ in your TikTok drafts'
         msg = (
