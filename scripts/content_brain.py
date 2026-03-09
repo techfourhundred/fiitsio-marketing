@@ -44,17 +44,40 @@ CONTENT_TEMPLATES = {
     },
 }
 
+## ── HOOK FORMULA (learned from 500K+ view experiment) ──────────────────────
+##
+## WRONG (self-focused, feature-focused → gets 900 views):
+##   "30% of gym members cancel in the first 90 days."
+##   "5 signs a member is about to cancel."
+##   "What Mindbody actually costs you."
+##   These flop. Nobody cares until they see themselves in it.
+##
+## RIGHT (human story formula → clears 50K-200K):
+##   [Another person] + [conflict or doubt] + showed them X → they changed their mind
+##   The viewer pictures the OTHER person's face. That's the hook.
+##   Examples that worked:
+##     "My landlord said I can't change anything so I showed her what AI thinks it could look like" → 234K
+##     "I showed my mum what AI thinks our living room could be." → 167K
+##     "My landlord wouldn't let me decorate until I showed her these." → 147K
+##
+## For Fiitsio: replace room/landlord with gym/gym owner scenarios.
+## "The other person" is a gym owner, a business partner, a Mindbody rep, a member.
+## The conflict is: disbelief, stubbornness, not knowing, "we can't afford to switch."
+##
+## EVERY hook below follows: [person] + [doubt/conflict] → showed them Fiitsio → they changed their mind
+
 HOOKS_BANK = [
-    "Your gym has a churn problem. You just can't see it yet.",
-    "Most gym owners don't realize they're paying €5,000/year in hidden fees.",
-    "Your member just cancelled. Did you get an alert?",
-    "I talked to 50 gym owners. 43 wanted to leave their software but felt stuck.",
-    "The gym software market is broken. Here's proof.",
-    "3 things every gym owner ignores until it's too late:",
-    "30% of gym members cancel in the first 90 days.",
-    "Mindbody just raised prices again. For the 4th time.",
-    "What happens when your gym runs on software members actually love?",
-    "Stop letting your gym management app manage YOU.",
+    # Tier 1 — Human story (follow the formula exactly)
+    "My gym owner friend said he couldn't afford to switch software. So I showed him what he was actually paying.",
+    "I showed a Mindbody user what their gym was spending per year. She went quiet.",
+    "My mate's gym lost 30% of members last quarter. He had no idea until I showed him this.",
+    "A gym owner told me churn was just 'part of the business.' Then I showed her the data.",
+    "My friend opened a gym last year. I showed her the number that would make or break it in year one.",
+    "A personal trainer asked me what software I'd use if I opened a gym. I showed her this comparison.",
+    "My business partner didn't think retention tracking was worth paying for. Then this happened.",
+    "A gym owner in Lisbon told me his members loved him. Then I showed him who hadn't booked in 3 weeks.",
+    "I showed a gym owner what Mindbody was taking in fees every year. He didn't believe me at first.",
+    "My gym owner friend was about to sign another 12-month contract with Glofox. I showed him this first.",
 ]
 
 # HASHTAG RULE: Max 5 per post — TikTok's current effective limit
@@ -65,56 +88,64 @@ TOPICS_POOL = [
         "topic": "member_churn_signs",
         "title": "4 signs a member is about to cancel",
         "template": "quick_tips",
-        "caption_hook": "Your member is planning to leave. You have 2 weeks to stop them.",
+        # Human story hook: gym owner + conflict (didn't know) + showed them
+        "caption_hook": "A gym owner in Lisbon told me his members loved him. Then I showed him who hadn't booked in 3 weeks.",
         "hashtags": ["#gymowner #memberretention #gymbusiness #fitnessapp #fiitsio"],
     },
     {
         "topic": "mindbody_hidden_fees",
         "title": "What Mindbody actually costs you",
         "template": "competitor_comparison",
-        "caption_hook": "Mindbody charges you how much per year?? (most gym owners don't know)",
+        # Human story: someone disbelieved → showed them → silent
+        "caption_hook": "I showed a Mindbody gym owner what they were paying per year. She went quiet.",
         "hashtags": ["#gymowner #mindbody #gymsoftware #gymbusiness #fiitsio"],
     },
     {
         "topic": "churn_stat_shock",
         "title": "The 30% churn stat that kills gyms",
         "template": "stat_shock",
-        "caption_hook": "30% of your gym members are planning to cancel. Most gyms find out after.",
+        # Human story: stubborn belief → data changed their mind
+        "caption_hook": "A gym owner told me churn was just 'part of the business.' Then I showed her the data.",
         "hashtags": ["#gymowner #gymretention #gymbusiness #memberretention #fiitsio"],
     },
     {
         "topic": "whatsapp_automation",
-        "title": "How to automate member retention on WhatsApp",
+        "title": "How one WhatsApp message cut gym cancellations",
         "template": "before_after",
-        "caption_hook": "This gym stopped losing members with one WhatsApp message. Here's how.",
+        # Human story: business partner doubted it
+        "caption_hook": "My business partner didn't think one WhatsApp message could change retention. Then this happened.",
         "hashtags": ["#gymowner #gymautomation #gymbusiness #memberretention #fiitsio"],
     },
     {
         "topic": "gym_software_switch",
-        "title": "We switched from Glofox — what happened",
+        "title": "My gym owner friend almost signed another Glofox contract",
         "template": "before_after",
-        "caption_hook": "We switched gym software and our revenue went up. Not down. Here's the math.",
+        # Human story: prevented a bad decision
+        "caption_hook": "My gym owner friend was about to sign another 12-month Glofox contract. I showed her this first.",
         "hashtags": ["#gymowner #gymsoftware #gymbusiness #gymtech #fiitsio"],
     },
     {
         "topic": "retention_math",
-        "title": "The math behind your gym's churn problem",
+        "title": "The retention maths gym owners don't want to do",
         "template": "stat_shock",
-        "caption_hook": "Here's the exact math gym owners need to understand about member churn.",
+        # Human story: new gym owner didn't see the risk
+        "caption_hook": "A friend opened a gym last year. I showed her the number that would make or break it in year one.",
         "hashtags": ["#gymowner #gymretention #gymbusiness #fitnessapp #fiitsio"],
     },
     {
         "topic": "gym_owner_time",
-        "title": "How gym owners waste 10 hours/week",
+        "title": "10 hours/week on tasks Fiitsio automates",
         "template": "pain_reveal",
-        "caption_hook": "You're spending 10+ hours/week on tasks that should take 10 minutes.",
+        # Human story: PT asked for advice → eye-opening comparison
+        "caption_hook": "A personal trainer asked me what software she'd use if she opened a gym. I showed her this.",
         "hashtags": ["#gymowner #gymbusiness #gymmanagement #gymproductivity #fiitsio"],
     },
     {
         "topic": "mbway_payments",
-        "title": "Why your gym needs MB Way",
+        "title": "Why your gym in Portugal needs MB Way",
         "template": "pain_reveal",
-        "caption_hook": "If your gym in Portugal doesn't accept MB Way, you're losing members.",
+        # Human story: gym owner didn't think payment methods mattered
+        "caption_hook": "A gym owner told me payment methods didn't matter. Then I showed him how many sign-ups he was losing.",
         "hashtags": ["#gymowner #mbway #ginasio #portugal #fiitsio"],
     },
 ]
